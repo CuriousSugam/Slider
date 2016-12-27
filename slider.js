@@ -1,5 +1,76 @@
 var sliders = [];
 var Slider = function(sliderWrapperId){
+
+	this.start = function(){
+		var that = this;
+		this.interval = setInterval(this.slideImages.bind(that) , 2000);
+	};
+
+	this.slideImages =  function(){
+		this.index++;
+		if(this.index > this.li.length-1){
+			this.index = 0;
+		}
+		this.ul.style.left = '-'+this.index * 100 +'%';
+		this.changeThumbnailOpacity(this.index);
+		this.slideThumbnail();
+	};
+
+	this.slideThumbnail = function(){
+		var thumbnail_width = this.thumbnail[0].width;	
+		var current_thumbnail_width = thumbnail_width * (this.index + 1);
+		var wrapper_width = this.li[0].clientWidth - thumbnail_width;	
+		if( current_thumbnail_width >= wrapper_width){
+			this.thumbnails_wrapper.style.left = '-' + (this.thumbnail_left_margin + thumbnail_width) + 'px';
+			this.thumbnail_left_margin += thumbnail_width;
+		}else{
+			this.thumbnails_wrapper.style.left = '0px';
+		}
+		if(this.index == 0){
+			this.thumbnail_left_margin = thumbnail_width;
+		}
+	};
+
+	this.goTo= function(sliderIndex){
+		var that = this;
+		this.changeThumbnailOpacity(sliderIndex);
+		this.slideThumbnail();
+		if(sliderIndex < 0 || sliderIndex > this.li.length -1)
+			return
+		this.index = sliderIndex;		
+		clearInterval(this.interval);
+		this.ul.style.left = '-'+ (this.index) * 100 +'%';
+		this.interval = setInterval(this.slideImages.bind(that), 2000);		
+	};
+
+	this.goToPrev = function(index) {
+      this.goTo(index);
+    };
+    this.goToNext = function(index) {
+      this.goTo(index);
+    };
+    this.prevClickHandler = function(){
+    	this.goToPrev(this.index - 1);
+    };
+    this.nextClickHandler = function(){
+    	this.goToNext(this.index + 1);
+    };
+    this.goToIndex = function (element, i){
+    	var that = this;
+		element.addEventListener('click', function(){
+				 this.goTo(i);
+			}.bind(that), false);	
+	};
+	this.changeThumbnailOpacity = function(sliderIndex){
+		for(var i = 0; i < this.thumbnail.length; i++){
+			element = this.thumbnail[i];
+			element.className = 'thumbnail';
+		};
+		if(sliderIndex >=0 && sliderIndex < this.thumbnail.length){
+			this.thumbnail[sliderIndex].setAttribute('class', 'active');	
+		}
+		
+	};
 	
 	this.thumbnails_wrapper = document.getElementById(sliderWrapperId).children['thumbnails-wrapper'];
 
@@ -28,73 +99,73 @@ var Slider = function(sliderWrapperId){
 
 }
 
-Slider.prototype = {
-	start: function(){
-		var that = this;
-		this.interval = setInterval(this.slideImages.bind(that) , 2000);
-	},
-	slideImages: function(){
-		this.index++;
-		if(this.index > this.li.length-1){
-			this.index = 0;
-		}
-		this.ul.style.left = '-'+this.index * 100 +'%';
-		this.changeThumbnailOpacity(this.index);
-		this.slideThumbnail();
-	},
-	slideThumbnail: function(){
-		var thumbnail_width = this.thumbnail[0].width;	
-		var current_thumbnail_width = thumbnail_width * (this.index + 1);
-		var wrapper_width = this.li[0].clientWidth - thumbnail_width;	
-		if( current_thumbnail_width >= wrapper_width){
-			this.thumbnails_wrapper.style.left = '-' + (this.thumbnail_left_margin + thumbnail_width) + 'px';
-			this.thumbnail_left_margin += thumbnail_width;
-		}else{
-			this.thumbnails_wrapper.style.left = '0px';
-		}
-		if(this.index == 0){
-			this.thumbnail_left_margin = thumbnail_width;
-		}
-	},
-	goTo: function(sliderIndex){
-		var that = this;
-		this.changeThumbnailOpacity(sliderIndex);
-		if(sliderIndex < 0 || sliderIndex > this.li.length -1)
-			return
-		this.index = sliderIndex;		
-		clearInterval(this.interval);
-		this.ul.style.left = '-'+ (this.index) * 100 +'%';
-		this.interval = setInterval(this.slideImages.bind(that), 2000);		
-	},
-	goToPrev: function() {
-      this.goTo(--this.index)
-    },
-    goToNext: function() {
-      this.goTo(++this.index)
-    },
-    prevClickHandler: function(){
-    	this.goToPrev(this.index - 1);
-    },
-    nextClickHandler: function(){
-    	this.goToNext(this.index + 1);
-    },
-    goToIndex: function (element, i){
-    	var that = this;
-		element.addEventListener('click', function(){
-				 this.goTo(i);
-			}.bind(that), false);	
-	},
-	changeThumbnailOpacity: function(sliderIndex){
-		for(var i = 0; i < this.thumbnail.length; i++){
-			element = this.thumbnail[i];
-			element.className = 'thumbnail';
-		};
-		if(sliderIndex >=0 && sliderIndex < this.thumbnail.length){
-			this.thumbnail[sliderIndex].setAttribute('class', 'active');	
-		}
+// Slider.prototype = {
+// 	start: function(){
+// 		var that = this;
+// 		this.interval = setInterval(this.slideImages.bind(that) , 2000);
+// 	},
+// 	slideImages: function(){
+// 		this.index++;
+// 		if(this.index > this.li.length-1){
+// 			this.index = 0;
+// 		}
+// 		this.ul.style.left = '-'+this.index * 100 +'%';
+// 		this.changeThumbnailOpacity(this.index);
+// 		this.slideThumbnail();
+// 	},
+// 	slideThumbnail: function(){
+// 		var thumbnail_width = this.thumbnail[0].width;	
+// 		var current_thumbnail_width = thumbnail_width * (this.index + 1);
+// 		var wrapper_width = this.li[0].clientWidth - thumbnail_width;	
+// 		if( current_thumbnail_width >= wrapper_width){
+// 			this.thumbnails_wrapper.style.left = '-' + (this.thumbnail_left_margin + thumbnail_width) + 'px';
+// 			this.thumbnail_left_margin += thumbnail_width;
+// 		}else{
+// 			this.thumbnails_wrapper.style.left = '0px';
+// 		}
+// 		if(this.index == 0){
+// 			this.thumbnail_left_margin = thumbnail_width;
+// 		}
+// 	},
+// 	goTo: function(sliderIndex){
+// 		var that = this;
+// 		this.changeThumbnailOpacity(sliderIndex);
+// 		if(sliderIndex < 0 || sliderIndex > this.li.length -1)
+// 			return
+// 		this.index = sliderIndex;		
+// 		clearInterval(this.interval);
+// 		this.ul.style.left = '-'+ (this.index) * 100 +'%';
+// 		this.interval = setInterval(this.slideImages.bind(that), 2000);		
+// 	},
+// 	goToPrev: function() {
+//       this.goTo(--this.index)
+//     },
+//     goToNext: function() {
+//       this.goTo(++this.index)
+//     },
+//     prevClickHandler: function(){
+//     	this.goToPrev(this.index - 1);
+//     },
+//     nextClickHandler: function(){
+//     	this.goToNext(this.index + 1);
+//     },
+//     goToIndex: function (element, i){
+//     	var that = this;
+// 		element.addEventListener('click', function(){
+// 				 this.goTo(i);
+// 			}.bind(that), false);	
+// 	},
+// 	changeThumbnailOpacity: function(sliderIndex){
+// 		for(var i = 0; i < this.thumbnail.length; i++){
+// 			element = this.thumbnail[i];
+// 			element.className = 'thumbnail';
+// 		};
+// 		if(sliderIndex >=0 && sliderIndex < this.thumbnail.length){
+// 			this.thumbnail[sliderIndex].setAttribute('class', 'active');	
+// 		}
 		
-	}
-}
+// 	}
+// }
 
 
 
